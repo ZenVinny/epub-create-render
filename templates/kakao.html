@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KakaoPage Extractor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📖 KakaoPage Extractor</h1>
+        <p class="subtitle">Extract chapters from saved KakaoPage files</p>
+
+        <form action="/process" method="post" enctype="multipart/form-data">
+            <!-- File upload -->
+            <div class="form-group">
+                <label for="files">📂 Upload MHTML/TXT files</label>
+                <input type="file" id="files" name="files" multiple accept=".txt,.mhtml,.html" required>
+                <small>Select multiple files saved from KakaoPage (as "Web Page, Complete")</small>
+            </div>
+
+            <!-- Novel title (with saved value) -->
+            <div class="form-group">
+                <label for="title">📝 Novel Title</label>
+                <input type="text" id="title" name="title" placeholder="Enter novel title" value="{{ state.get('title', 'KakaoPage Novel') }}">
+            </div>
+
+            <!-- Output format (with saved selection) -->
+            <div class="form-group">
+                <label for="format">📁 Output Format</label>
+                <select id="format" name="format">
+                    <option value="epub" {% if state.get('format') == 'epub' %}selected{% endif %}>EPUB</option>
+                    <option value="txt" {% if state.get('format') == 'txt' %}selected{% endif %}>TXT</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">🚀 Process Files</button>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for msg in messages %}
+                        <div class="flash-error">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <footer>
+            <p>Extracts text from KakaoPage saved MHTML files.</p>
+        </footer>
+    </div>
+</body>
+</html>

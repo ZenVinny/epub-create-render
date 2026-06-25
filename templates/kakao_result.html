@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Processing Complete</h1>
+        <p class="subtitle" style="border-left-color: #2b8a3e;">
+            <strong>{{ title }}</strong> has been processed successfully.
+        </p>
+        <div class="download-list">
+            <a href="{{ url_for('download', filename=filename) }}" class="btn download-btn">
+                ⬇️ Download {{ filename.split('.')[-1].upper() }}
+            </a>
+        </div>
+        <a href="{{ url_for('index') }}" class="btn secondary">← Back to Home</a>
+    </div>
+</body>
+</html>
