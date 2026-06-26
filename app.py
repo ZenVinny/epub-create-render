@@ -1,6 +1,5 @@
 import os
 import json
-import uuid
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from scripts.extract_kakao import extract_kakaopage_chapter
@@ -81,14 +80,13 @@ def process():
         flash('No valid chapters extracted.')
         return redirect(url_for('index'))
 
-    uid = uuid.uuid4().hex[:8]
     base_name = secure_filename(novel_title.replace(' ', '_'))
     if output_format == 'epub':
-        out_filename = f"{base_name}_{uid}.epub"
+        out_filename = f"{base_name}.epub"
         out_path = os.path.join(app.config['DOWNLOAD_FOLDER'], out_filename)
         build_epub(chapters, novel_title, out_path)
     else:
-        out_filename = f"{base_name}_{uid}.txt"
+        out_filename = f"{base_name}.txt"
         out_path = os.path.join(app.config['DOWNLOAD_FOLDER'], out_filename)
         with open(out_path, 'w', encoding='utf-8') as f:
             for ch in chapters:
