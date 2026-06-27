@@ -26,21 +26,19 @@ def extract_addict_chapter(file_path):
     title_tag = article.find('h1')
     if title_tag:
         title = title_tag.get_text(strip=True)
-        # Strip common prefix if present
         if title.startswith("Book 1 "):
             title = title[7:]
     else:
         title = os.path.splitext(os.path.basename(file_path))[0]
 
-    # Paragraphs – preserve internal formatting (e.g., single quotes, em dashes)
+    # Extract paragraphs, skipping any that are empty or only whitespace
     paragraphs = []
     for p in article.find_all('p', recursive=False):
-        # Get text with spaces between elements, but preserve internal punctuation
         text = p.get_text(separator=' ', strip=False)
-        # Collapse whitespace to single spaces, trim
-        text = re.sub(r'\s+', ' ', text).strip()
-        if text:
-            paragraphs.append(text)
+        # Collapse whitespace and strip leading/trailing spaces
+        cleaned = re.sub(r'\s+', ' ', text).strip()
+        if cleaned:
+            paragraphs.append(cleaned)
 
     # Fallback: if no direct children paragraphs, get all
     if not paragraphs:
