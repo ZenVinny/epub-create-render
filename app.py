@@ -3,6 +3,7 @@ import json
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from scripts.extract_kakao import extract_kakaopage_chapter
+from scripts.extract_addict import extract_addict_chapter   # NEW
 from scripts.epub_builder import build_epub
 
 app = Flask(__name__)
@@ -68,9 +69,17 @@ def process():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         try:
+            # Try KakaoPage extraction first
             text = extract_kakaopage_chapter(filepath)
             chapter_title = os.path.splitext(filename)[0]
             chapters.append({'title': chapter_title, 'text': text})
+        except ValueError as e:
+            # If KakaoPage fails, try Addict Habitat extraction
+            try:
+                title, text = extract_addict_chapter(filepath)
+                chapters.append({'title': title, 'text': text})
+            except Exception as e2:
+                flash(f'Error processing {filename}: {str(e2)}')
         except Exception as e:
             flash(f'Error processing {filename}: {str(e)}')
         finally:
