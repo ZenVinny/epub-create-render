@@ -58,19 +58,3 @@ def extract_addict_chapter(file_path):
     full_text = '\n\n'.join(paragraphs)
 
     return title, full_text
-
-
-# Simple CLI for testing
-if __name__ == '__main__':
-    import sys
-    if len(sys.argv) < 2:
-        print("Usage: python extract_addict.py <mhtml_file>")
-        sys.exit(1)
-    file_path = sys.argv[1]
-    try:
-        title, text = extract_addict_chapter(file_path)
-        print(f"Title: {title}\n")
-        print(text)
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        sys.exit(1)
