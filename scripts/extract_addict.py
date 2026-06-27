@@ -1,6 +1,12 @@
 import os
+import re
 from bs4 import BeautifulSoup
-from .mhtml_utils import extract_html_from_mhtml_bytes
+
+try:
+    from .mhtml_utils import extract_html_from_mhtml_bytes
+except ImportError:
+    from mhtml_utils import extract_html_from_mhtml_bytes
+
 
 def extract_addict_chapter(file_path):
     """Extract title and text from an Addict Habitat MHTML file."""
@@ -18,17 +24,28 @@ def extract_addict_chapter(file_path):
 
     # Title
     title_tag = article.find('h1')
-    title = title_tag.get_text(strip=True) if title_tag else os.path.splitext(os.path.basename(file_path))[0]
+    if title_tag:
+        title = title_tag.get_text(strip=True)
+        # Strip common prefix if present
+        if title.startswith("Book 1 "):
+            title = title[7:]
+    else:
+        title = os.path.splitext(os.path.basename(file_path))[0]
 
-    # Paragraphs
+    # Paragraphs – preserve internal formatting (e.g., single quotes, em dashes)
     paragraphs = []
     for p in article.find_all('p', recursive=False):
-        text = p.get_text(strip=True)
+        # Get text with spaces between elements, but preserve internal punctuation
+        text = p.get_text(separator=' ', strip=False)
+        # Collapse whitespace to single spaces, trim
+        text = re.sub(r'\s+', ' ', text).strip()
         if text:
             paragraphs.append(text)
-    if not paragraphs:  # fallback
+
+    # Fallback: if no direct children paragraphs, get all
+    if not paragraphs:
         for p in article.find_all('p'):
-            text = p.get_text(strip=True)
+            text = re.sub(r'\s+', ' ', p.get_text(separator=' ', strip=False)).strip()
             if text:
                 paragraphs.append(text)
 
