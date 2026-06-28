@@ -31,20 +31,19 @@ def extract_addict_chapter(file_path):
     else:
         title = os.path.splitext(os.path.basename(file_path))[0]
 
-    # Extract paragraphs, skipping any that are empty or only whitespace
+    # Extract non-empty paragraphs
     paragraphs = []
     for p in article.find_all('p', recursive=False):
         text = p.get_text(separator=' ', strip=False)
-        # Collapse whitespace and strip leading/trailing spaces
         cleaned = re.sub(r'\s+', ' ', text).strip()
-        if cleaned:
+        if cleaned:  # Skip empty paragraphs
             paragraphs.append(cleaned)
 
     # Fallback: if no direct children paragraphs, get all
     if not paragraphs:
         for p in article.find_all('p'):
             text = re.sub(r'\s+', ' ', p.get_text(separator=' ', strip=False)).strip()
-            if text:
+            if text:  # Skip empty paragraphs
                 paragraphs.append(text)
 
     return title, '\n\n'.join(paragraphs)
