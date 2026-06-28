@@ -36,14 +36,15 @@ def extract_addict_chapter(file_path):
     for p in article.find_all('p', recursive=False):
         text = p.get_text(separator=' ', strip=False)
         cleaned = re.sub(r'\s+', ' ', text).strip()
-        if cleaned:  # Skip empty paragraphs
+        if cleaned:
             paragraphs.append(cleaned)
 
     # Fallback: if no direct children paragraphs, get all
     if not paragraphs:
         for p in article.find_all('p'):
             text = re.sub(r'\s+', ' ', p.get_text(separator=' ', strip=False)).strip()
-            if text:  # Skip empty paragraphs
+            if text:
                 paragraphs.append(text)
 
-    return title, '\n\n'.join(paragraphs)
+    # Use single newline to avoid blank lines between paragraphs
+    return title, '\n'.join(paragraphs)
